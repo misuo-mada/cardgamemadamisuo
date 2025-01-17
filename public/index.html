@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>スマホ向けカードゲーム</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin: 10px 0;
+    }
+    #status {
+      text-align: center;
+      font-size: 18px;
+      margin: 10px;
+    }
+    .container {
+      display: flex;
+      overflow-x: auto;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px;
+      scroll-snap-type: x mandatory;
+    }
+    .card {
+      flex: 0 0 150px;
+      height: 200px;
+      background-color: gray;
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      color: white;
+      text-align: center;
+      cursor: pointer;
+      scroll-snap-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s;
+    }
+    .card:active {
+      transform: scale(0.95);
+    }
+    .card.flipped {
+      background-color: white;
+      color: black;
+      font-size: 16px;
+      line-height: 1.2;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    button {
+      display: block;
+      width: 80%;
+      margin: 10px auto;
+      padding: 15px;
+      font-size: 18px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    button:active {
+      background-color: #004494;
+    }
+  </style>
+</head>
+<body>
+  <h1>スマホ向けカードゲーム</h1>
+  <div id="status">カードをタップして引いてください（最大3枚まで）</div>
+  <div class="container" id="cards"></div>
+  <button id="resetGame">ゲームをリセット</button>
+
+  <script>
+    const socket = io();
+    const cardsContainer = document.getElementById('cards');
+    const statusDiv = document.getElementById('status');
+    let drawnCardsCount = 0;
+
+    // 初期のカードを表示
+    function renderCards(cards) {
+      cardsContainer.innerHTML = ''; // すべてのカードをクリア
+      cards.forEach((card, index) => {
+        const cardElement = document.createElement('div');
+        cardElement.className = 'card';
+        cardElement.dataset.index = index; // カードのインデックスを設定
+        cardElement.textContent = 'カード';
+        cardElement.addEventListener('click', () => handleCardClick(index));
+        cardsContainer.appendChild(cardElement);
+      });
+    }
+
+    // カードをクリックしたときの動作
+    function handleCardClick(index) {
+      if (drawnCardsCount < 3) {
+        socket.emit('drawCard', index);
+      } else {
+        statusDiv.textContent = 'すでに3枚引いています。';
+      }
+    }
+
+    // カード情報を受信したときの処理
+    socket.on('cardInfo', ({ index, info }) => {
+      const cardElement = cardsContainer.children[index];
+      if (cardElement) {
+        cardElement.classList.add('flipped'); // カードをめくるスタイルを適用
+        cardElement.textContent = info; // 情報を表示
+      }
+      drawnCardsCount++;
+    });
+
+    // ゲームリセット
+    socket.on('gameReset', ({ cards }) => {
+      drawnCardsCount = 0;
+      renderCards(cards);
+      statusDiv.textContent = 'ゲームをリセットしました！';
+    });
+
+    // 初期カードをサーバーから受信
+    socket.on('initCards', (cards) => {
+      renderCards(cards);
+    });
+
+    // サーバーに初期化リクエストを送信
+    socket.emit('initGame');
+
+    // リセットボタン
+    document.getElementById('resetGame').addEventListener('click', () => {
+      socket.emit('resetGame');
+    });
+  </script>
+</body>
+</html>
