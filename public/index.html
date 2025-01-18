@@ -23,32 +23,35 @@
       margin: 10px;
     }
     .container {
-      display: flex;
-      overflow-x: auto;
-      justify-content: center;
-      gap: 10px;
-      padding: 10px;
-      scroll-snap-type: x mandatory;
-    }
-    .card {
-      flex: 0 0 150px;
-      height: 200px;
-      background-color: gray;
-      border-radius: 12px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 20px;
-      color: white;
-      text-align: center;
-      cursor: pointer;
-      scroll-snap-align: center;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      transition: transform 0.3s;
-    }
-    .card:active {
-      transform: scale(0.95);
-    }
+  display: flex;
+  overflow-x: auto;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  scroll-snap-type: x mandatory;
+  box-sizing: border-box; /* パディングを含めてサイズを計算 */
+}
+.card {
+  flex: 0 0 calc(100% - 20px); /* カード幅を画面幅に基づいて調整 */
+  max-width: 150px; /* カードの最大幅を制限 */
+  height: 200px;
+  background-color: gray;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  color: white;
+  text-align: center;
+  cursor: pointer;
+  scroll-snap-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+
+.card:active {
+  transform: scale(0.95);
+}
     .card.flipped {
       background-color: white;
       color: black;
