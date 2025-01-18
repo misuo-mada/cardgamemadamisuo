@@ -121,9 +121,9 @@
   </div>
 
   <h1>スマホ向けカードゲーム</h1>
-  <div id="status">カードをタップして引いてください（最大3枚まで）</div>
+  <div id="status">証拠カードを選んでください（最大3枚）。</div>
   <div class="container" id="cards"></div>
-  <button id="resetGame">ゲームをリセット</button>
+  <!-- <button id="resetGame">ゲームをリセット</button> -->
 
   <script>
     const socket = io();
@@ -174,7 +174,6 @@
     socket.on('gameReset', ({ cards }) => {
       drawnCardsCount = 0;
       renderCards(cards);
-      statusDiv.textContent = 'ゲームをリセットしました！';
     });
 
     // 初期カードをサーバーから受信
@@ -186,7 +185,7 @@
     socket.emit('initGame');
 
     // リセットボタン
-    document.getElementById('resetGame').addEventListener('click', () => {
+    document.getElementById('ruleButton').addEventListener('click', () => {
       socket.emit('resetGame');
     });
   </script>
