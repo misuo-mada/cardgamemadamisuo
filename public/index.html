@@ -25,15 +25,13 @@
     .container {
   display: flex;
   overflow-x: auto;
-  justify-content: center;
   gap: 10px;
-  padding: 10px;
+  padding: 10px 20px; /* 横方向に余白を追加 */
   scroll-snap-type: x mandatory;
-  box-sizing: border-box; /* パディングを含めてサイズを計算 */
+  box-sizing: border-box;
 }
 .card {
-  flex: 0 0 calc(100% - 20px); /* カード幅を画面幅に基づいて調整 */
-  max-width: 150px; /* カードの最大幅を制限 */
+  flex: 0 0 150px;
   height: 200px;
   background-color: gray;
   border-radius: 12px;
